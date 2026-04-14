@@ -7,16 +7,18 @@ export const syncOfflineUsers = async () => {
       SELECT * FROM users WHERE synced = 0;
     `);
 
-    if (users.length === 0) {
+    if (!users || users.length === 0) {
       console.log('No users to sync');
       return;
     }
 
     console.log('Syncing users:', users.length);
 
-    // 🔵 STEP 2: Send each user to server
+    // 🔵 STEP 2: Loop users
     for (const user of users) {
       try {
+        console.log('SYNCING USER:', user.email);
+
         const res = await fetch('http://172.16.17.130/backend/api/register.php', {
           method: 'POST',
           headers: {
@@ -30,19 +32,31 @@ export const syncOfflineUsers = async () => {
           }),
         });
 
-        const data = await res.json();
+        // 🔥 IMPORTANT: read raw response first
+        const text = await res.text();
+        console.log('RAW RESPONSE:', text);
 
-        console.log('Server response:', data);
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          console.log('INVALID JSON → skipping user:', user.email);
+          continue; // skip this user, try next
+        }
 
-        if (data.status === 'success') {
-          // 🔵 STEP 3: Mark as synced in SQLite
+        console.log('PARSED RESPONSE:', data);
+
+        // 🔵 STEP 3: Handle response
+        if (data.status === 'success' || data.status === 'exists') {
           db.execSync(`
             UPDATE users 
             SET synced = 1 
             WHERE id = ${user.id};
           `);
 
-          console.log('User synced:', user.email, user.password);
+          console.log('USER SYNCED:', user.email);
+        } else {
+          console.log('SYNC FAILED FROM SERVER:', user.email);
         }
 
       } catch (err) {
