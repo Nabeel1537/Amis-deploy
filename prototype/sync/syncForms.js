@@ -1,7 +1,7 @@
 import NetInfo from "@react-native-community/netinfo";
 import { db } from "../db/database";
 
-const API_URL = "http://172.16.13.232/backend/api/submit-form.php";
+const API_URL = "https://techware.agency/nabeel/backend/api/submit-form.php";
 
 const MAX_RETRY = 5;
 

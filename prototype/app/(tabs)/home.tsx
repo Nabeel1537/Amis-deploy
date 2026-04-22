@@ -7,12 +7,18 @@ import {
   Dimensions,
   StatusBar,
   Animated,
+  TouchableOpacity,
 } from "react-native";
+
 import { LineChart } from "react-native-chart-kit";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 const screenWidth = Dimensions.get("window").width;
 
 export default function Home() {
+  const router = useRouter();
+
   const [chartData, setChartData] = useState([72, 74, 73, 78, 80, 77, 85]);
   const [timeLeft, setTimeLeft] = useState(300);
 
@@ -25,6 +31,16 @@ export default function Home() {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  // logout function
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear(); // clear login/session data
+      router.replace("/login"); // prevent back navigation
+    } catch (error) {
+      console.log("Logout error:", error);
+    }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -63,10 +79,20 @@ export default function Home() {
 
       {/* HEADER */}
       <Animated.View style={[styles.header, { opacity: fadeAnim }]}>
-        <Text style={styles.title}>AMIS Records</Text>
-        <Text style={styles.sub}>
-          Agriculture Market Intelligence System
-        </Text>
+        
+        {/* top row with logout */}
+        <View style={styles.headerTop}>
+          <View>
+            <Text style={styles.title}>AMIS Records</Text>
+            <Text style={styles.sub}>
+              Agriculture Market Intelligence System
+            </Text>
+          </View>
+
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.timerBox}>
           <Text style={styles.timerLabel}>Auto Refresh</Text>
@@ -208,6 +234,25 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
+  },
+
+  headerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  logoutBtn: {
+    backgroundColor: "#dc2626",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+
+  logoutText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "bold",
   },
 
   title: { fontSize: 20, fontWeight: "bold", color: "#fff" },

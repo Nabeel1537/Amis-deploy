@@ -2,7 +2,7 @@ import { db } from "../db/database";
 
 export const syncMasterData = async () => {
   try {
-    const res = await fetch("http://172.16.13.232/backend/api/get-all.php");
+    const res = await fetch("https://techware.agency/nabeel/backend/api/get-all.php");
     const data = await res.json();
 
     console.log("SYNC DATA:", data);

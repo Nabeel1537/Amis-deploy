@@ -20,7 +20,7 @@ export const syncRates = async (onDone) => {
         console.log("SYNCING:", rate.crop);
 
         const res = await fetch(
-          "http://172.16.13.232/backend/api/submit-rates.php",
+          "https://techware.agency/nabeel/backend/api/submit-rates.php",
           {
             method: "POST",
             headers: {

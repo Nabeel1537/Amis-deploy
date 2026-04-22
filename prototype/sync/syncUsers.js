@@ -30,7 +30,7 @@ export const syncOfflineUsers = async () => {
         };
 
         const res = await fetch(
-          "http://172.16.13.232/backend/api/register.php",
+          "https://techware.agency/nabeel/backend/api/register.php",
           {
             method: "POST",
             headers: {
